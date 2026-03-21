@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>stock1 計算</title>
+<title>stock1 計算（修正版）</title>
 <style>
 body {
   font-family: sans-serif;
@@ -12,20 +12,25 @@ body {
 input, button {
   margin: 6px 0;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   padding: 6px;
+  font-size: 16px;
+}
+button {
+  cursor: pointer;
 }
 </style>
 </head>
 <body>
 
-<h2>stock1 計算</h2>
+<h2>stock1 計算（修正版）</h2>
 
 B: <input id="B" type="number" step="any"><br>
 V: <input id="V" type="number" step="any"><br>
 O: <input id="O" type="number" step="any"><br>
 r: <input id="r" type="number" step="any"><br>
-T: <input id="T" type="number" step="any"><br>
+T1: <input id="T1" type="number" step="any"><br>
+T2: <input id="T2" type="number" step="any"><br>
 
 <button onclick="calc()">計算して送信</button>
 
@@ -35,25 +40,36 @@ OX: <span id="OX"></span>
 
 <script>
 
-// ★あなたのGAS URLに置き換え
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwc8190guNV9ZxCTZ2M_AXiCmdzzxUsuidlysW0RLboSvd1ci1yzdzIHIA2VrCQbvg-3w/exec";
+// ★あなたのApps Script URLに差し替え
+const GAS_URL = "https://script.google.com/macros/s/XXXXXXXX/exec";
 
 function calc() {
 
-  const B = parseFloat(document.getElementById("B").value) || 0;
-  const V = parseFloat(document.getElementById("V").value) || 0;
-  const O = parseFloat(document.getElementById("O").value) || 0;
-  const r = parseFloat(document.getElementById("r").value) || 0;
-  const T = parseFloat(document.getElementById("T").value) || 1;
+  const B  = parseFloat(document.getElementById("B").value) || 0;
+  const V  = parseFloat(document.getElementById("V").value) || 0;
+  const O  = parseFloat(document.getElementById("O").value) || 0;
+  const r  = parseFloat(document.getElementById("r").value) || 0;
+  const T1 = parseFloat(document.getElementById("T1").value) || 0;
+  const T2 = parseFloat(document.getElementById("T2").value) || 1;
 
-  // ===== 計算 =====
-  const M = (B * V - O) / (V * Math.exp(-r * T));
-  const OX = (B - M) / T;
+  // ===== 修正済み計算 =====
+  const denominator = V * Math.exp(-r * T1);
 
+  let M = 0;
+  if (denominator !== 0) {
+    M = (B * V - O) / denominator;
+  }
+
+  let OX = 0;
+  if (T2 !== 0) {
+    OX = (B - M) / T2;
+  }
+
+  // ===== 表示 =====
   document.getElementById("M").textContent = M.toFixed(4);
   document.getElementById("OX").textContent = OX.toFixed(4);
 
-  // ===== JSONP送信 =====
+  // ===== JSONP送信（OXのみ）=====
   const callbackName = "cb_" + Date.now();
 
   window[callbackName] = function(res) {
