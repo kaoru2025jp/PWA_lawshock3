@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stock1 計算</title>
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+input, button {
+  margin: 6px 0;
+  width: 100%;
+  max-width: 300px;
+  padding: 6px;
+}
+</style>
+</head>
+<body>
+
+<h2>stock1 計算</h2>
+
+B: <input id="B" type="number" step="any"><br>
+V: <input id="V" type="number" step="any"><br>
+O: <input id="O" type="number" step="any"><br>
+r: <input id="r" type="number" step="any"><br>
+T: <input id="T" type="number" step="any"><br>
+
+<button onclick="calc()">計算して送信</button>
+
+<h3>結果</h3>
+M: <span id="M"></span><br>
+OX: <span id="OX"></span>
+
+<script>
+
+// ★あなたのGAS URLに置き換え
+const GAS_URL = "https://script.google.com/macros/s/XXXXXXXX/exec";
+
+function calc() {
+
+  const B = parseFloat(document.getElementById("B").value) || 0;
+  const V = parseFloat(document.getElementById("V").value) || 0;
+  const O = parseFloat(document.getElementById("O").value) || 0;
+  const r = parseFloat(document.getElementById("r").value) || 0;
+  const T = parseFloat(document.getElementById("T").value) || 1;
+
+  // ===== 計算 =====
+  const M = (B * V - O) / (V * Math.exp(-r * T));
+  const OX = (B - M) / T;
+
+  document.getElementById("M").textContent = M.toFixed(4);
+  document.getElementById("OX").textContent = OX.toFixed(4);
+
+  // ===== JSONP送信 =====
+  const callbackName = "cb_" + Date.now();
+
+  window[callbackName] = function(res) {
+    console.log("送信成功", res);
+    delete window[callbackName];
+  };
+
+  const script = document.createElement("script");
+
+  script.src =
+    GAS_URL +
+    "?numbers=" + encodeURIComponent(OX.toFixed(4)) +
+    "&callback=" + callbackName;
+
+  document.body.appendChild(script);
+}
+
+</script>
+
+</body>
+</html>
