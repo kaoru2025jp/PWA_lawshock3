@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>stock1 計算（完成版）</title>
+<title>stock1 計算（最終固定版）</title>
 <style>
 body {
   font-family: sans-serif;
@@ -23,7 +23,7 @@ button {
 </head>
 <body>
 
-<h2>stock1 計算（完成版）</h2>
+<h2>stock1 計算（最終固定版）</h2>
 
 B: <input id="B" type="number" step="any"><br>
 V: <input id="V" type="number" step="any"><br>
@@ -40,11 +40,12 @@ OX: <span id="OX"></span>
 
 <script>
 
-// ★Apps Script URL（そのまま使う）
+// ★あなたのGAS URL
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxbkA5GahpmrKohmd-WZfAR6NmvvqqnMcv18Wh5p0eioxgpicIlj5TCozH8R17xBpchhQ/exec";
 
 function calc() {
 
+  // ===== 入力 =====
   const B  = parseFloat(document.getElementById("B").value) || 0;
   const V  = parseFloat(document.getElementById("V").value) || 0;
   const O  = parseFloat(document.getElementById("O").value) || 0;
@@ -52,7 +53,7 @@ function calc() {
   const T1 = parseFloat(document.getElementById("T1").value) || 0;
   const T2 = parseFloat(document.getElementById("T2").value) || 1;
 
-  // ===== 計算 =====
+  // ===== 計算（元のまま）=====
   const denominator = V * Math.exp(-r * T1);
 
   let M = 0;
@@ -70,21 +71,19 @@ function calc() {
   document.getElementById("OX").textContent = OX.toFixed(4);
 
   // ===== 送信（成功例と同じ形式）=====
-  const callbackName = "cb_" + Date.now();
-
-  window[callbackName] = function(res) {
-    console.log("送信成功", res);
-    delete window[callbackName];
-  };
-
   const script = document.createElement("script");
 
   script.src =
     GAS_URL +
     "?numbers=" + encodeURIComponent(OX.toFixed(4)) +
-    "&callback=" + callbackName;
+    "&callback=cb";
 
   document.body.appendChild(script);
+}
+
+// コールバック（成功例と同じ）
+function cb(res) {
+  console.log("送信成功", res);
 }
 
 </script>
