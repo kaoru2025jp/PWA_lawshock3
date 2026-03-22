@@ -72,21 +72,21 @@ function calc() {
   // ===== JSONP送信（OXのみ）=====
   const callbackName = "cb_" + Date.now();
 
-  window[callbackName] = function(res) {
-    console.log("送信成功", res);
-    delete window[callbackName];
-  };
+window[callbackName] = function(res) {
+  console.log("受信:", res);
+  delete window[callbackName];
+};
 
-  const script = document.createElement("script");
+const script = document.createElement("script");
 
-  script.src =
-    GAS_URL +
-    "?numbers=" + encodeURIComponent(OX.toFixed(4)) +
-    "&callback=" + callbackName;
+script.src =
+  GAS_URL +
+  "?M=" + encodeURIComponent(M.toFixed(4)) +
+  "&OX=" + encodeURIComponent(OX.toFixed(4)) +
+  "&callback=" + callbackName;
 
-  document.body.appendChild(script);
-}
-
+document.body.appendChild(script);
+  
 </script>
 
 </body>
